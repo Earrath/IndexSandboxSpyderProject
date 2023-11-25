@@ -1,0 +1,12 @@
+[workspace]
+restore_data_on_startup = True
+save_data_on_exit = True
+save_history = True
+save_non_project_files = False
+project_type = 'empty-project-type'
+recent_files = ['FakePortfolio_ID_PopulationThroughPython.py', 'CalendarDataCleansingCalendarCreation_USHOLIDAY.py', '..\\..\\..\\..\\..\\Python\\Python Scripts\\DatabaseConnection.py', 'Portfolio_Dates.py']
+
+[main]
+version = 0.2.0
+recent_files = []
+
