@@ -32,22 +32,23 @@ table = 'bondsinstruments'
 fileDf=pd.read_csv(filePath+fileName)
 
 fileDf = fileDf.rename(columns={
-    'Bond Name':'bondID',
+    'Bond_Name':'bondID',
     'ISIN':'ISIN',
     'Issuer':'Issuer',
-    'Issue Date':'IssueDate',
-    'Maturity Date':'MaturityDate',
-    'Coupon Rate':'CouponRate',
-    'Face Value':'FaceValue',
-    'Market Value':'MarketValue',
+    'Issue_Date':'IssueDate',
+    'Maturity_Date':'MaturityDate',
+    'Coupon_Rate':'CouponRate',
+    'Face_Value':'FaceValue',
+    'Market_Value':'MarketValue',
     'Currency':'Currency',
-    "Moody's Rating":'MoodysRating',
-    'S&P Rating':'SPRating',
-    'Fitch Rating':'FitchRating',
+    "Moody's_Rating":'MoodysRating',
+    'S&P_Rating':'SPRating',
+    'Fitch_Rating':'FitchRating',
     'Sector':'Sector',
-    'Reference Rate':'ReferenceRate',
+    'Reference_Rate':'ReferenceRate',
     'Seniority':'Seniority',
-    'Type of Bond':'TypeOfBond'
+    'Type_of_Bond':'TypeOfBond',
+
 })
 
 
@@ -55,6 +56,10 @@ fileDf = fileDf.rename(columns={
 
 # Insert DataFrame into SQL Server
 if insert ==1:
+    
+    with engine.connect() as conn:
+        conn.execute(f"DELETE FROM {database}..{table}")
+
     fileDf.to_sql(table, con=engine, if_exists='append', index=False)
 
 
