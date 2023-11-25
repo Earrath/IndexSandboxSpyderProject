@@ -11,7 +11,7 @@ import time                              #Check Running times
 
 #Parameters
 calendarID = 1
-
+portfolioID = 1
 
 
 #Database Connection Parameters
@@ -24,11 +24,36 @@ conn_url = f'mssql+pyodbc://{server}/{database}?driver={driver}&trusted_connecti
 engine = create_engine(conn_url)
 
 #Calendar Table SQL Retrieval
-calendarSQLTable = 'Calendar'
+calendarSQLTable = 'calendars'
 calendarSQL = f"SELECT * FROM {database}..{calendarSQLTable} where CalendarID={calendarID}"  # Replace with your query and table name
 
 # Retrieve data into a DataFrame
 calendarDf = pd.read_sql_query(calendarSQL, engine)
+
+# DatesRemoved (Debug)
+calendarHolsWknds= calendarDf.loc[calendarDf['daytype']!=0]
+
+# Remove Holiday Dates
+calendarDf= calendarDf.loc[calendarDf['daytype']==0]
+
+
+
+# Group by year and month, and select the minimum date
+# firstDayOfMonth = calendarDf.groupby(['Year', 'Month'])['Date'].min().reset_index()
+firstDayOfMonth = calendarDf.groupby(['year', 'month']).agg('min').reset_index()
+
+firstDatesHistorical= firstDayOfMonth[['date']].copy()
+firstDatesHistorical['portfolioID']= portfolioID
+
+
+
+# Insert DataFrame into SQL Server
+firstDatesHistorical.to_sql('portfoliodates', con=engine, if_exists='append', index=False)
+
+
+print(calendarDf.dtypes)
+
+
 
 
 
