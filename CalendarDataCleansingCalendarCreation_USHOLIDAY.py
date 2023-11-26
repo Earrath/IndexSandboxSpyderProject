@@ -11,7 +11,7 @@ initalTime = time.time()
 
 #Dates Logic to create calendar.
 startDate = '1990-01-01'
-endDate   = '2050-01-01'#datetime.today().strftime('%Y-%m-%d')
+endDate   = '2050-01-01'                    #datetime.today().strftime('%Y-%m-%d')
 
 
 # Generate calendar
@@ -76,9 +76,9 @@ usHolidayCalendar['calendarId'] = '1'
 
 
 #Database Connection
-server = 'DESKTOP-J9GGR42'  # e.g., 'localhost\sqlexpress'
+server = 'DESKTOP-J9GGR42' 
 database = 'indexSandbox'
-driver = 'ODBC Driver 17 for SQL Server'  # May vary based on your installed ODBC driver
+driver = 'ODBC Driver 17 for SQL Server'  
 
 # Connection URL
 conn_url = f'mssql+pyodbc://{server}/{database}?driver={driver}&trusted_connection=yes'
