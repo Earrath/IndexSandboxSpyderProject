@@ -11,7 +11,7 @@ initalTime = time.time()
 
 #Dates Logic to create calendar.
 startDate = '1990-01-01'
-endDate   = datetime.today().strftime('%Y-%m-%d')
+endDate   = '2050-01-01'#datetime.today().strftime('%Y-%m-%d')
 
 
 # Generate calendar
@@ -90,8 +90,8 @@ engine = create_engine(conn_url)
 
 
 # Insert DataFrame into SQL Server
-usHolidayCalendar.to_sql('Calendars', con=engine, if_exists='append', index=False)
 
+usHolidayCalendar.to_sql('calendars', con=engine, if_exists='append', index=False)
 
 
 
