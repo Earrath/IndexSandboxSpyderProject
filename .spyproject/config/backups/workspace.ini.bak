@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['FakePortfolio_ID_PopulationThroughPython.py', 'CalendarDataCleansingCalendarCreation_USHOLIDAY.py', '..\\..\\..\\..\\..\\Python\\Python Scripts\\DatabaseConnection.py', 'Portfolio_Dates.py']
+recent_files = ['..\\..\\..\\..\\..\\Python\\Python Scripts\\DatabaseConnection.py', 'FakePortfolio_ID_PopulationThroughPython.py', 'CalendarDataCleansingCalendarCreation_USHOLIDAY.py', 'Portfolio_Dates.py', 'Useful_Queries.py', 'DataBaseLoader.py']
 
 [main]
 version = 0.2.0

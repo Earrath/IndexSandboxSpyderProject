@@ -51,6 +51,12 @@ fileDf = fileDf.rename(columns={
 
 })
 
+fileDfSeniority = fileDf.groupby('Seniority').agg('count')
+fileDfSector = fileDf.groupby('Sector').agg('count')
+fileDfReferenceRate = fileDf.groupby('ReferenceRate').agg('count')
+fileDfCurrency = fileDf.groupby('Currency').agg('count')
+
+
 
 
 
