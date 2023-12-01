@@ -21,8 +21,6 @@ rebalanceDatesSQL = "select * from indexSandbox..portfolioDates where portfolioI
 # Retrieve data into a DataFrame
 rebalanceDates = pd.read_sql_query(rebalanceDatesSQL, engine)
 
-
-
    
 for index, row in rebalanceDates.iterrows():
     current_date = row['date'] 
