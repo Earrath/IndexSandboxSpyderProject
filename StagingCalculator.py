@@ -33,7 +33,10 @@ portfolioDetailsSQLTable = 'lkup_portfolio_details'
 portfolioDetailsSQL = f"SELECT * FROM {database}..{portfolioDetailsSQLTable} where portfolioID={portfolioID}"
 portfolioDetails = pd.read_sql_query(portfolioDetailsSQL, engine)
 
+#Parameterize portfolioDetails
 
+# Example 4: Select specific row and column
+calendarID = portfolioDetails.loc[0, 'calendarID'] 
 
 #Retrieve prices for date.
 pricesSQLTable = 'bondPrices'
@@ -45,6 +48,19 @@ prices = pd.read_sql_query(pricesSQL, engine)
 
 
 #Calendar Table SQL Retrieval
+#Begin End Dates
+beginDateCalendar = runDate
+endDateCalendar = '01-30-2024'
+CalendarSQLTable = 'calendars'
+CalendarSQL = f"SELECT * FROM {database}..{CalendarSQLTable} where calendarID={calendarID} and date <='{endDateCalendar}'"  
+
+calendarRaw = pd.read_sql_query(CalendarSQL, engine)
+
+#Retrieve Holiday Dates , might be useful for future inputs retrieval.
+
+#Final Calendar without holiday dates.
+
+# Retrieve data into a DataFrame
 
 
 #Check if date is valid for calculator
