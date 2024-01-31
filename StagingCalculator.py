@@ -74,18 +74,13 @@ calendarDates = calendarRaw.loc[calendarRaw['daytype']==0,:]
 
 
 # Retrieve portfolio data into a DataFrame
-#Retrieve prices for date.
+
 constituentsDataSQLTable= 'portfolioItems'
 constituentsDataSQL = f"SELECT * FROM {database}..{constituentsDataSQLTable} where portfolioDate='{portfolioDate}' and portfolioID={portfolioID}"  
 # Retrieve data into a DataFrame
 constituentsData = pd.read_sql_query(constituentsDataSQL, engine)
 
 #Populate Prices
-
-
-
-
-
 #Retrieve prices for date.
 pricesSQLTable = 'bondPrices'
 pricesSQL = f"SELECT * FROM {database}..{pricesSQLTable} where priceDate='{runDate}'"  
@@ -93,7 +88,10 @@ pricesSQL = f"SELECT * FROM {database}..{pricesSQLTable} where priceDate='{runDa
 prices = pd.read_sql_query(pricesSQL, engine)
 
 
-
+#constituentsStaging = pd.merge(constituentsData,prices , on='bondID', how='left')
+constituentsStaging = pd.merge(prices ,constituentsData, on='bondID', how='left')
+notPricedLoans = constituentsStaging['closeBid']==None
+constituentsStaging.isna().sum()
 
 
 
