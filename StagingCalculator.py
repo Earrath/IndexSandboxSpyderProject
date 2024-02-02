@@ -14,7 +14,7 @@ import time                              #Check Running times
 initalTime = time.time()
 
 #Parameters
-runDate = '2020-11-02'
+runDate = '2020-11-03'
 portfolioID = 1
 
 
@@ -51,7 +51,8 @@ SELECT	dbo.GetPrevious_Date({calendarID}, '{runDate}')	       AS previousDate,
 """
 portfolioRunDates = pd.read_sql_query(portfolioRunDatesSQL, engine)
 #Parameterize dates
-portfolioDate              = portfolioRunDates.loc[0, 'BOMDate'] 
+portfolioDate               = portfolioRunDates.loc[0, 'BOMDate'] 
+profileDate                 = portfolioRunDates.loc[0, 'previousEOM'] 
 
 #Calendar Table SQL Retrieval
 #Begin End Dates
@@ -70,7 +71,7 @@ holidaysWeekendsDates = calendarRaw.loc[holidaysWeekendsMask]
 calendarDates = calendarRaw.loc[calendarRaw['daytype']==0,:]
 
 
-
+print(f"Calculator running for portfolio {portfolioID} - {portfolioName} on {runDate}. Portfolio Date: {portfolioDate}.")
 
 
 # Retrieve portfolio data into a DataFrame
@@ -80,6 +81,14 @@ constituentsDataSQL = f"SELECT * FROM {database}..{constituentsDataSQLTable} whe
 # Retrieve data into a DataFrame
 constituentsData = pd.read_sql_query(constituentsDataSQL, engine)
 
+#Send notification error that query didn't return results.(Data frame empty) / Send notification of success
+if constituentsData.empty:
+    print(f"No constituent data found.SQL:{constituentsDataSQL}")
+else:
+    print(f"Constituent monthly static data loaded into staging DF. portfolioID={portfolioID} PortfolioDate= {portfolioDate}.")
+
+
+
 #Populate Prices
 #Retrieve prices for date.
 pricesSQLTable = 'bondPrices'
@@ -87,11 +96,63 @@ pricesSQL = f"SELECT * FROM {database}..{pricesSQLTable} where priceDate='{runDa
 # Retrieve data into a DataFrame
 prices = pd.read_sql_query(pricesSQL, engine)
 
+#Send notification error that query didn't return results.(Data frame empty) / Send notification of success
+if prices.empty:
+    print(f"No pricing data found for the date.\nSQL:{pricesSQL}")
+else:
+    # Process your DataFrame
+    print(f"Prices loaded for {runDate}.")
 
-#constituentsStaging = pd.merge(constituentsData,prices , on='bondID', how='left')
-constituentsStaging = pd.merge(prices ,constituentsData, on='bondID', how='left')
-notPricedLoans = constituentsStaging['closeBid']==None
-constituentsStaging.isna().sum()
+
+#Retrieve profile prices for date.
+profilePricesSQLTable = 'bondPrices'
+profilePricesSQL = f"SELECT * FROM {database}..{pricesSQLTable} where priceDate='{profileDate}'"  
+# Retrieve data into a DataFrame
+profilePrices = pd.read_sql_query(profilePricesSQL, engine)
+
+#Send notification error that query didn't return results.(Data frame empty) / Send notification of success
+if profilePrices.empty:
+    print(f"No pricing data found for the date.\nSQL:{profilePricesSQL}")
+else:
+    # Process your DataFrame
+    print(f"Profile prices loaded for {runDate}.")
+
+
+#Join Prices and Staging Dataframe
+constituentsStaging = pd.merge(constituentsData,prices , on='bondID', how='left')
+constituentsStaging.rename(columns={'priceDate': 'todayPriceDate','closeBid': 'todayCloseBid', 'closeAsk': 'todayCloseAsk','closeMid': 'todayCloseMid'}, inplace=True)
+constituentsStaging = pd.merge(constituentsStaging,profilePrices , on='bondID', how='left')
+constituentsStaging.rename(columns={'priceDate': 'profilePriceDate','closeBid': 'profileCloseBid', 'closeAsk': 'profileCloseAsk','closeMid': 'profileCloseMid'}, inplace=True)
+
+
+#Check Nulls
+# print(constituentsStaging.isna().sum())
+#Constituents Data aggregations / Checks
+constituentsAggregations = {
+    'todayCloseBid'      : 'mean',
+    'marketValue'   : 'sum',
+    'bondID'        : 'count',
+}
+constituentsDataAggs= constituentsStaging.agg(constituentsAggregations)
+#Transpose
+constituentsDataAggs = constituentsDataAggs.to_frame().T
+#Map Number of constituents
+numberOfConstituents = constituentsDataAggs.loc[0,'bondID']
+
+
+
+#Price Returns
+constituentsStaging['priceReturn']= (((constituentsStaging['todayCloseBid']-constituentsStaging['profileCloseBid'])/constituentsStaging['profileCloseBid'])*100)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -99,4 +160,4 @@ constituentsStaging.isna().sum()
 #Checking Performance
 endTime= time.time()
 elapsedTime = endTime - initalTime
-print(f"Elapsed time: {elapsedTime} seconds")
+print(f"Process run time: {elapsedTime} seconds")
