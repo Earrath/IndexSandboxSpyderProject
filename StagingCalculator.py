@@ -130,8 +130,8 @@ constituentsStaging.rename(columns={'priceDate': 'profilePriceDate','closeBid': 
 #Constituents Data aggregations / Checks
 constituentsAggregations = {
     'todayCloseBid'      : 'mean',
-    'marketValue'   : 'sum',
-    'bondID'        : 'count',
+    'marketValue'        : 'sum',
+    'bondID'             : 'count',
 }
 constituentsDataAggs= constituentsStaging.agg(constituentsAggregations)
 #Transpose
@@ -146,12 +146,13 @@ constituentsStaging['priceReturn']= (((constituentsStaging['todayCloseBid']-cons
 
 
 
+#Weights Calculation
+constituentsStaging['weight'] = (constituentsStaging['profileCloseBid']*constituentsStaging['faceValue'])
+constituentsStaging['weightPercentage'] = (constituentsStaging['weight']/sum(constituentsStaging['weight']))
 
 
 
-
-
-
+#Interest Returns
 
 
 
